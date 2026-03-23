@@ -121,7 +121,7 @@ export default function RegisterModal({ isOpen, onClose, onSuccess }: RegisterMo
             className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
             style={{ touchAction: "manipulation" }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
           </button>
         </div>
 
@@ -144,7 +144,7 @@ export default function RegisterModal({ isOpen, onClose, onSuccess }: RegisterMo
               <input
                 type="text"
                 className="form-input"
-                placeholder="Ví dụ: Ý - Em cô dâu"
+                placeholder="Ví dụ: Như Ý - Em cô dâu"
                 value={guestName}
                 onChange={(e) => setGuestName(e.target.value)}
                 autoComplete="off"
@@ -257,8 +257,19 @@ export default function RegisterModal({ isOpen, onClose, onSuccess }: RegisterMo
               onClick={handleSubmit}
               disabled={isSubmitting || !guestName.trim() || !songName.trim()}
             >
-              <MicIcon size={18} />
-              {isSubmitting ? "Đang gửi..." : "Đăng ký bài hát"}
+              {isSubmitting ? (
+                <>
+                  <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" />
+                  </svg>
+                  Đang gửi...
+                </>
+              ) : (
+                <>
+                  <MicIcon size={18} />
+                  Đăng ký bài hát
+                </>
+              )}
             </button>
           </>
         )}
