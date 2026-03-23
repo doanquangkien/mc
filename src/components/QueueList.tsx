@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import useSWR from "swr";
 import Pagination from "./Pagination";
+import { ListIcon, MapPinIcon, MusicNoteIcon, StarIcon, CheckCircleIcon, MessageIcon, HistoryIcon } from "./Icons";
 
 interface QueueItem {
   id: string;
@@ -35,18 +36,15 @@ export default function QueueList({ isAdmin }: QueueListProps) {
     setMyIds(stored);
   }, []);
 
-  // Separate queue items
   const waitingItems = allItems?.filter((item) => item.status === "WAITING" || item.status === "PRIORITY") || [];
   const doneItems = allItems?.filter((item) => item.status === "DONE") || [];
 
-  // Pagination for waiting items
   const totalWaitingPages = Math.ceil(waitingItems.length / ITEMS_PER_PAGE);
   const paginatedWaiting = waitingItems.slice(
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE
   );
 
-  // Find my position
   const myPosition = waitingItems.findIndex((item) => myIds.includes(item.id));
 
   const handleAction = async (id: string, status: string) => {
@@ -70,7 +68,7 @@ export default function QueueList({ isAdmin }: QueueListProps) {
           className="glass-card px-4 py-3 mb-4 flex items-center gap-3"
           style={{ borderLeft: "3px solid var(--primary)" }}
         >
-          <span className="text-2xl">📍</span>
+          <MapPinIcon size={22} className="text-rose-500 shrink-0" />
           <div>
             <p className="text-sm font-semibold" style={{ color: "var(--primary)" }}>
               Bạn đang ở vị trí số {myPosition + 1}
@@ -83,7 +81,8 @@ export default function QueueList({ isAdmin }: QueueListProps) {
       {/* Queue header */}
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-          📋 Danh sách chờ
+          <ListIcon size={20} />
+          Danh sách chờ
           <span className="text-xs font-normal px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
             {waitingItems.length}
           </span>
@@ -104,7 +103,6 @@ export default function QueueList({ isAdmin }: QueueListProps) {
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-start gap-3 flex-1 min-w-0">
-                    {/* Position number */}
                     <div
                       className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold"
                       style={{
@@ -121,15 +119,19 @@ export default function QueueList({ isAdmin }: QueueListProps) {
                         </p>
                         <span className="text-xs text-gray-400">({item.role})</span>
                         {item.status === "PRIORITY" && (
-                          <span className="badge badge-priority">⭐ Ưu tiên</span>
+                          <span className="badge badge-priority flex items-center gap-1">
+                            <StarIcon size={10} /> Ưu tiên
+                          </span>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600 mt-0.5 truncate">
-                        🎵 {item.songName}
+                      <p className="text-sm text-gray-600 mt-0.5 truncate flex items-center gap-1">
+                        <MusicNoteIcon size={14} className="shrink-0" />
+                        {item.songName}
                       </p>
                       {item.note && (
-                        <p className="text-xs text-gray-400 mt-0.5 truncate">
-                          💬 {item.note}
+                        <p className="text-xs text-gray-400 mt-0.5 truncate flex items-center gap-1">
+                          <MessageIcon size={12} className="shrink-0" />
+                          {item.note}
                         </p>
                       )}
                     </div>
@@ -141,26 +143,27 @@ export default function QueueList({ isAdmin }: QueueListProps) {
                   <div className="flex gap-2 mt-2.5 pl-10">
                     {item.status !== "PRIORITY" && (
                       <button
-                        className="btn-action"
+                        className="btn-action flex items-center gap-1"
                         style={{ background: "#ede9fe", color: "var(--badge-priority)" }}
                         onClick={() => handleAction(item.id, "PRIORITY")}
                       >
-                        ⭐ Ưu tiên
+                        <StarIcon size={12} /> Ưu tiên
                       </button>
                     )}
                     <button
-                      className="btn-action"
+                      className="btn-action flex items-center gap-1"
                       style={{ background: "#d1fae5", color: "var(--badge-done)" }}
                       onClick={() => handleAction(item.id, "DONE")}
                     >
-                      ✅ Đã hát
+                      <CheckCircleIcon size={12} /> Đã hát
                     </button>
                     <button
-                      className="btn-action"
+                      className="btn-action flex items-center gap-1"
                       style={{ background: "#fee2e2", color: "#ef4444" }}
                       onClick={() => handleAction(item.id, "CANCELED")}
                     >
-                      ✕ Xóa
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      Xóa
                     </button>
                   </div>
                 )}
@@ -170,13 +173,12 @@ export default function QueueList({ isAdmin }: QueueListProps) {
         </div>
       ) : (
         <div className="glass-card py-12 text-center">
-          <div className="text-4xl mb-3">🎶</div>
+          <MusicNoteIcon size={40} className="mx-auto text-gray-300 mb-3" />
           <p className="text-sm text-gray-400">Chưa có ai đăng ký bài hát</p>
           <p className="text-xs text-gray-300 mt-1">Hãy là người đầu tiên!</p>
         </div>
       )}
 
-      {/* Pagination */}
       <Pagination
         currentPage={page}
         totalPages={totalWaitingPages}
@@ -191,7 +193,6 @@ export default function QueueList({ isAdmin }: QueueListProps) {
   );
 }
 
-/* History sub-component */
 function HistorySection({ items }: { items: QueueItem[] }) {
   const [page, setPage] = useState(1);
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
@@ -203,7 +204,8 @@ function HistorySection({ items }: { items: QueueItem[] }) {
   return (
     <div className="mt-6">
       <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2 mb-3">
-        📜 Lịch sử đã hát
+        <HistoryIcon size={20} />
+        Lịch sử đã hát
         <span className="text-xs font-normal px-2 py-0.5 rounded-full bg-green-50 text-green-600">
           {items.length}
         </span>

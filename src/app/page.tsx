@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import RegisterModal from "@/components/RegisterModal";
 import QueueList from "@/components/QueueList";
 import AdminLogin from "@/components/AdminLogin";
+import { HeartIcon, MicIcon } from "@/components/Icons";
 
 export default function Home() {
   const [showRegister, setShowRegister] = useState(true);
@@ -12,7 +13,6 @@ export default function Home() {
   useEffect(() => {
     const adminStored = localStorage.getItem("isAdmin") === "true";
     if (adminStored) {
-      // Verify with server
       fetch("/api/auth")
         .then((r) => r.json())
         .then((data) => {
@@ -27,7 +27,7 @@ export default function Home() {
     <div className="flex flex-col flex-1 w-full max-w-lg mx-auto px-4 py-4">
       {/* Header */}
       <header className="text-center mb-5">
-        <div className="text-4xl mb-2">💒</div>
+        <HeartIcon size={36} className="mx-auto text-rose-400 mb-2" />
         <h1
           className="text-2xl font-bold"
           style={{
@@ -39,7 +39,7 @@ export default function Home() {
           Karaoke Đám Cưới
         </h1>
         <p className="text-sm text-gray-400 mt-1">
-          Chọn bài hát yêu thích và lên sân khấu! 🎤
+          Chọn bài hát yêu thích và lên sân khấu!
         </p>
       </header>
 
@@ -54,7 +54,7 @@ export default function Home() {
         onClick={() => setShowRegister(true)}
         aria-label="Đăng ký bài hát"
       >
-        🎤
+        <MicIcon size={24} />
       </button>
 
       {/* Register Modal */}

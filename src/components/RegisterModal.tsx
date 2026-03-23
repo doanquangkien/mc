@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import useSWR from "swr";
 import Pagination from "./Pagination";
+import { MicIcon, ChevronDownIcon, ChevronRightIcon, PartyIcon } from "./Icons";
 
 interface Song {
   id: string;
@@ -37,12 +38,10 @@ export default function RegisterModal({ isOpen, onClose, onSuccess }: RegisterMo
 
   const { data: categories } = useSWR<Category[]>(isOpen ? "/api/songs" : null, fetcher);
 
-  // Reset song page when category changes
   useEffect(() => {
     setSongPage(1);
   }, [activeCategory]);
 
-  // Reset form on open
   useEffect(() => {
     if (isOpen) {
       setSubmitSuccess(false);
@@ -64,7 +63,6 @@ export default function RegisterModal({ isOpen, onClose, onSuccess }: RegisterMo
   const handleSubmit = async () => {
     if (!guestName.trim() || !songName.trim()) return;
 
-    // Parse name: "Ý - Em cô dâu" => guestName: "Ý", role: "Em cô dâu"
     const parts = guestName.split(" - ");
     const name = parts[0]?.trim() || guestName.trim();
     const role = parts[1]?.trim() || "Khách mời";
@@ -84,7 +82,6 @@ export default function RegisterModal({ isOpen, onClose, onSuccess }: RegisterMo
 
       if (res.ok) {
         const data = await res.json();
-        // Save to localStorage
         const existingIds = JSON.parse(localStorage.getItem("myQueueIds") || "[]");
         existingIds.push(data.id);
         localStorage.setItem("myQueueIds", JSON.stringify(existingIds));
@@ -92,7 +89,6 @@ export default function RegisterModal({ isOpen, onClose, onSuccess }: RegisterMo
         setSubmitSuccess(true);
         onSuccess(data.id);
 
-        // Reset form after delay
         setTimeout(() => {
           setGuestName("");
           setSongName("");
@@ -115,22 +111,23 @@ export default function RegisterModal({ isOpen, onClose, onSuccess }: RegisterMo
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-xl font-bold" style={{ color: "var(--primary)" }}>
-            🎤 Đăng ký bài hát
+          <h2 className="text-xl font-bold flex items-center gap-2" style={{ color: "var(--primary)" }}>
+            <MicIcon size={22} />
+            Đăng ký bài hát
           </h2>
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
-            style={{ fontSize: "18px", touchAction: "manipulation" }}
+            style={{ touchAction: "manipulation" }}
           >
-            ✕
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
 
         {/* Success message */}
         {submitSuccess ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <div className="text-5xl mb-4">🎉</div>
+            <PartyIcon size={48} className="text-green-500 mb-4" />
             <p className="text-lg font-semibold" style={{ color: "var(--success)" }}>
               Đăng ký thành công!
             </p>
@@ -175,7 +172,7 @@ export default function RegisterModal({ isOpen, onClose, onSuccess }: RegisterMo
                 className="flex items-center gap-1.5 text-sm font-semibold mb-3"
                 style={{ color: "var(--primary)", touchAction: "manipulation" }}
               >
-                <span>{showSuggestions ? "▼" : "▶"}</span>
+                {showSuggestions ? <ChevronDownIcon size={16} /> : <ChevronRightIcon size={16} />}
                 Gợi ý bài hát?
               </button>
 
@@ -232,7 +229,6 @@ export default function RegisterModal({ isOpen, onClose, onSuccess }: RegisterMo
                     )}
                   </div>
 
-                  {/* Pagination */}
                   <Pagination
                     currentPage={songPage}
                     totalPages={totalPages}
@@ -256,11 +252,12 @@ export default function RegisterModal({ isOpen, onClose, onSuccess }: RegisterMo
 
             {/* Submit button */}
             <button
-              className="btn-primary"
+              className="btn-primary flex items-center justify-center gap-2"
               onClick={handleSubmit}
               disabled={isSubmitting || !guestName.trim() || !songName.trim()}
             >
-              {isSubmitting ? "Đang gửi..." : "🎤 Đăng ký bài hát"}
+              <MicIcon size={18} />
+              {isSubmitting ? "Đang gửi..." : "Đăng ký bài hát"}
             </button>
           </>
         )}

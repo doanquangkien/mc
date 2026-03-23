@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
 
 :root {
   --background: #fdf2f8;
@@ -23,13 +22,13 @@
   --color-primary: var(--primary);
   --color-primary-light: var(--primary-light);
   --color-primary-dark: var(--primary-dark);
-  --font-sans: 'Be Vietnam Pro', sans-serif;
+  --font-sans: var(--font-be-vietnam), 'Be Vietnam Pro', sans-serif;
 }
 
 body {
   background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fff1f2 100%);
   color: var(--foreground);
-  font-family: 'Be Vietnam Pro', sans-serif;
+  font-family: var(--font-be-vietnam), 'Be Vietnam Pro', sans-serif;
   min-height: 100dvh;
   -webkit-text-size-adjust: 100%;
 }
@@ -148,7 +147,7 @@ input, select, textarea, button {
   border: 1.5px solid #e5e7eb;
   border-radius: 12px;
   font-size: 16px !important;
-  font-family: 'Be Vietnam Pro', sans-serif;
+  font-family: var(--font-be-vietnam), 'Be Vietnam Pro', sans-serif;
   transition: border-color 0.2s, box-shadow 0.2s;
   outline: none;
   background: #fafafa;
@@ -171,7 +170,7 @@ input, select, textarea, button {
   color: white;
   font-weight: 600;
   font-size: 16px !important;
-  font-family: 'Be Vietnam Pro', sans-serif;
+  font-family: var(--font-be-vietnam), 'Be Vietnam Pro', sans-serif;
   border: none;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
@@ -260,7 +259,6 @@ input, select, textarea, button {
   border-radius: 50%;
   background: linear-gradient(135deg, #e11d48, #be123c);
   color: white;
-  font-size: 24px;
   border: none;
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(225, 29, 72, 0.4);

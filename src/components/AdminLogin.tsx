@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { LockIcon, UnlockIcon } from "./Icons";
 
 interface AdminLoginProps {
   isAdmin: boolean;
@@ -52,7 +53,9 @@ export default function AdminLogin({ isAdmin, onLoginSuccess, onLogout }: AdminL
     <footer className="py-6 text-center">
       {isAdmin ? (
         <div className="flex items-center justify-center gap-3">
-          <span className="text-xs text-green-600 font-medium">🔓 Admin Mode</span>
+          <span className="text-xs text-green-600 font-medium flex items-center gap-1">
+            <UnlockIcon size={14} /> Admin Mode
+          </span>
           <button
             onClick={handleLogout}
             className="text-xs text-gray-400 underline"
@@ -71,7 +74,6 @@ export default function AdminLogin({ isAdmin, onLoginSuccess, onLogout }: AdminL
         </button>
       )}
 
-      {/* PIN Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div
@@ -79,7 +81,9 @@ export default function AdminLogin({ isAdmin, onLoginSuccess, onLogout }: AdminL
             onClick={(e) => e.stopPropagation()}
             style={{ maxWidth: "360px", borderRadius: "20px", padding: "24px" }}
           >
-            <h3 className="text-lg font-bold text-gray-800 mb-4">🔐 Đăng nhập Admin</h3>
+            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 justify-center">
+              <LockIcon size={20} /> Đăng nhập Admin
+            </h3>
             <input
               type="password"
               className="form-input mb-3"
