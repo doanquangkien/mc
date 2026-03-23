@@ -139,7 +139,7 @@ export default function RegisterModal({ isOpen, onClose, onSuccess }: RegisterMo
             {/* Tên */}
             <div className="mb-4">
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Tên
+                Tên Người Hát
               </label>
               <input
                 type="text"
