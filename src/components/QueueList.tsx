@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import useSWR from "swr";
 import Pagination from "./Pagination";
+import ConfirmDialog from "./ConfirmDialog";
 import { ListIcon, MapPinIcon, MusicNoteIcon, MicIcon, StarIcon, CheckCircleIcon, MessageIcon, HistoryIcon } from "./Icons";
 
 interface QueueItem {
@@ -23,9 +24,16 @@ interface QueueListProps {
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 const ITEMS_PER_PAGE = 10;
 
+const ACTION_CONFIG: Record<string, { title: string; message: string; confirmText: string; color: string }> = {
+  PRIORITY: { title: "Ưu tiên bài hát", message: "Đẩy bài hát này lên đầu hàng đợi?", confirmText: "Ưu tiên", color: "#7c3aed" },
+  DONE: { title: "Đánh dấu đã hát", message: "Xác nhận bài hát này đã hát xong?", confirmText: "Đã hát", color: "#10b981" },
+  CANCELED: { title: "Xóa bài hát", message: "Xác nhận xóa bài hát này khỏi hàng đợi?", confirmText: "Xóa", color: "#ef4444" },
+};
+
 export default function QueueList({ isAdmin, onRegisterClick }: QueueListProps) {
   const [myIds, setMyIds] = useState<string[]>([]);
   const [page, setPage] = useState(1);
+  const [pendingAction, setPendingAction] = useState<{ id: string; status: string } | null>(null);
 
   const apiUrl = isAdmin ? "/api/queue?history=true" : "/api/queue";
   const { data: allItems, mutate } = useSWR<QueueItem[]>(apiUrl, fetcher, {
@@ -38,7 +46,7 @@ export default function QueueList({ isAdmin, onRegisterClick }: QueueListProps) 
   }, []);
 
   const waitingItems = allItems?.filter((item) => item.status === "WAITING" || item.status === "PRIORITY") || [];
-  const doneItems = allItems?.filter((item) => item.status === "DONE") || [];
+  const doneItems = allItems?.filter((item) => item.status === "DONE" || item.status === "CANCELED") || [];
 
   const totalWaitingPages = Math.ceil(waitingItems.length / ITEMS_PER_PAGE);
   const paginatedWaiting = waitingItems.slice(
@@ -48,17 +56,19 @@ export default function QueueList({ isAdmin, onRegisterClick }: QueueListProps) 
 
   const myPosition = waitingItems.findIndex((item) => myIds.includes(item.id));
 
-  const handleAction = async (id: string, status: string) => {
+  const confirmAction = async () => {
+    if (!pendingAction) return;
     try {
-      await fetch(`/api/queue/${id}`, {
+      await fetch(`/api/queue/${pendingAction.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status: pendingAction.status }),
       });
       mutate();
     } catch (error) {
       console.error("Failed to update:", error);
     }
+    setPendingAction(null);
   };
 
   return (
@@ -154,7 +164,7 @@ export default function QueueList({ isAdmin, onRegisterClick }: QueueListProps) 
                       <button
                         className="btn-action flex items-center gap-1"
                         style={{ background: "#ede9fe", color: "var(--badge-priority)" }}
-                        onClick={() => handleAction(item.id, "PRIORITY")}
+                        onClick={() => setPendingAction({ id: item.id, status: "PRIORITY" })}
                       >
                         <StarIcon size={12} /> Ưu tiên
                       </button>
@@ -162,14 +172,14 @@ export default function QueueList({ isAdmin, onRegisterClick }: QueueListProps) 
                     <button
                       className="btn-action flex items-center gap-1"
                       style={{ background: "#d1fae5", color: "var(--badge-done)" }}
-                      onClick={() => handleAction(item.id, "DONE")}
+                      onClick={() => setPendingAction({ id: item.id, status: "DONE" })}
                     >
                       <CheckCircleIcon size={12} /> Đã hát
                     </button>
                     <button
                       className="btn-action flex items-center gap-1"
                       style={{ background: "#fee2e2", color: "#ef4444" }}
-                      onClick={() => handleAction(item.id, "CANCELED")}
+                      onClick={() => setPendingAction({ id: item.id, status: "CANCELED" })}
                     >
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                       Xóa
@@ -206,6 +216,19 @@ export default function QueueList({ isAdmin, onRegisterClick }: QueueListProps) 
       {isAdmin && doneItems.length > 0 && (
         <HistorySection items={doneItems} />
       )}
+
+      {/* Confirm dialog */}
+      {pendingAction && ACTION_CONFIG[pendingAction.status] && (
+        <ConfirmDialog
+          isOpen={true}
+          title={ACTION_CONFIG[pendingAction.status].title}
+          message={ACTION_CONFIG[pendingAction.status].message}
+          confirmText={ACTION_CONFIG[pendingAction.status].confirmText}
+          confirmColor={ACTION_CONFIG[pendingAction.status].color}
+          onConfirm={confirmAction}
+          onCancel={() => setPendingAction(null)}
+        />
+      )}
     </div>
   );
 }
@@ -231,7 +254,9 @@ function HistorySection({ items }: { items: QueueItem[] }) {
         {paginated.map((item) => (
           <div key={item.id} className="glass-card px-4 py-2.5 opacity-60">
             <div className="flex items-center gap-2">
-              <span className="badge badge-done">Đã hát</span>
+              <span className={`badge ${item.status === "CANCELED" ? "badge-canceled" : "badge-done"}`}>
+                {item.status === "CANCELED" ? "Đã xóa" : "Đã hát"}
+              </span>
               <p className="text-sm text-gray-600 truncate">
                 <span className="font-semibold">{item.guestName}</span>
                 {" - "}

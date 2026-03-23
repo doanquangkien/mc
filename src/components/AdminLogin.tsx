@@ -67,7 +67,7 @@ export default function AdminLogin({ isAdmin, onLoginSuccess, onLogout }: AdminL
       ) : (
         <button
           onClick={() => setShowModal(true)}
-          className="text-xs text-gray-300 hover:text-gray-500 transition-colors"
+          className="text-xs text-gray-600 hover:text-gray-900 transition-colors"
           style={{ touchAction: "manipulation" }}
         >
           Đăng nhập

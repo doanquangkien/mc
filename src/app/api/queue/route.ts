@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
 
     // Determine which statuses to fetch
     const statusFilter = includeHistory
-      ? ["WAITING", "PRIORITY", "DONE"]
+      ? ["WAITING", "PRIORITY", "DONE", "CANCELED"]
       : ["WAITING", "PRIORITY"];
 
     const queueItems = await prisma.queue.findMany({
@@ -16,16 +16,15 @@ export async function GET(request: NextRequest) {
         status: { in: statusFilter },
       },
       orderBy: [
-        // PRIORITY items first, then by creation time
         { createdAt: "asc" },
       ],
     });
 
-    // Custom sort: PRIORITY first, then WAITING, then DONE
     const statusOrder: Record<string, number> = {
       PRIORITY: 0,
       WAITING: 1,
       DONE: 2,
+      CANCELED: 3,
     };
 
     queueItems.sort((a: { status: string; createdAt: Date }, b: { status: string; createdAt: Date }) => {
