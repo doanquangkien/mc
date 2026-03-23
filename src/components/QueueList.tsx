@@ -35,7 +35,7 @@ export default function QueueList({ isAdmin, onRegisterClick }: QueueListProps) 
   const [page, setPage] = useState(1);
   const [pendingAction, setPendingAction] = useState<{ id: string; status: string } | null>(null);
 
-  const apiUrl = isAdmin ? "/api/queue?history=true" : "/api/queue";
+  const apiUrl = "/api/queue?history=true";
   const { data: allItems, mutate } = useSWR<QueueItem[]>(apiUrl, fetcher, {
     refreshInterval: 3000,
   });
@@ -46,7 +46,9 @@ export default function QueueList({ isAdmin, onRegisterClick }: QueueListProps) 
   }, []);
 
   const waitingItems = allItems?.filter((item) => item.status === "WAITING" || item.status === "PRIORITY") || [];
-  const doneItems = allItems?.filter((item) => item.status === "DONE" || item.status === "CANCELED") || [];
+  const doneItems = isAdmin
+    ? (allItems?.filter((item) => item.status === "DONE" || item.status === "CANCELED") || [])
+    : (allItems?.filter((item) => item.status === "DONE") || []);
 
   const totalWaitingPages = Math.ceil(waitingItems.length / ITEMS_PER_PAGE);
   const paginatedWaiting = waitingItems.slice(
@@ -212,9 +214,9 @@ export default function QueueList({ isAdmin, onRegisterClick }: QueueListProps) 
         onPageChange={setPage}
       />
 
-      {/* History section - admin only */}
-      {isAdmin && doneItems.length > 0 && (
-        <HistorySection items={doneItems} />
+      {/* History section */}
+      {doneItems.length > 0 && (
+        <HistorySection items={doneItems} isAdmin={isAdmin} />
       )}
 
       {/* Confirm dialog */}
@@ -233,7 +235,7 @@ export default function QueueList({ isAdmin, onRegisterClick }: QueueListProps) 
   );
 }
 
-function HistorySection({ items }: { items: QueueItem[] }) {
+function HistorySection({ items, isAdmin }: { items: QueueItem[]; isAdmin: boolean }) {
   const [page, setPage] = useState(1);
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const paginated = items.slice(
@@ -252,11 +254,13 @@ function HistorySection({ items }: { items: QueueItem[] }) {
       </h2>
       <div className="flex flex-col gap-2">
         {paginated.map((item) => (
-          <div key={item.id} className="glass-card px-4 py-2.5 opacity-60">
+          <div key={item.id} className="glass-card px-4 py-2.5">
             <div className="flex items-center gap-2">
-              <span className={`badge ${item.status === "CANCELED" ? "badge-canceled" : "badge-done"}`}>
-                {item.status === "CANCELED" ? "Đã xóa" : "Đã hát"}
-              </span>
+              {item.status === "CANCELED" && isAdmin ? (
+                <span className="badge badge-canceled whitespace-nowrap">Đã xóa</span>
+              ) : (
+                <span className="badge badge-done whitespace-nowrap">Đã hát</span>
+              )}
               <p className="text-sm text-gray-600 truncate">
                 <span className="font-semibold">{item.guestName}</span>
                 {" - "}
