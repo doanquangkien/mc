@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import useSWR from "swr";
 import Pagination from "./Pagination";
-import { ListIcon, MapPinIcon, MusicNoteIcon, StarIcon, CheckCircleIcon, MessageIcon, HistoryIcon } from "./Icons";
+import { ListIcon, MapPinIcon, MusicNoteIcon, MicIcon, StarIcon, CheckCircleIcon, MessageIcon, HistoryIcon } from "./Icons";
 
 interface QueueItem {
   id: string;
@@ -17,12 +17,13 @@ interface QueueItem {
 
 interface QueueListProps {
   isAdmin: boolean;
+  onRegisterClick: () => void;
 }
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 const ITEMS_PER_PAGE = 10;
 
-export default function QueueList({ isAdmin }: QueueListProps) {
+export default function QueueList({ isAdmin, onRegisterClick }: QueueListProps) {
   const [myIds, setMyIds] = useState<string[]>([]);
   const [page, setPage] = useState(1);
 
@@ -87,6 +88,14 @@ export default function QueueList({ isAdmin }: QueueListProps) {
             {waitingItems.length}
           </span>
         </h2>
+        <button
+          onClick={onRegisterClick}
+          className="btn-primary flex items-center gap-1.5"
+          style={{ width: "auto", padding: "8px 16px", fontSize: "13px" }}
+        >
+          <MicIcon size={14} />
+          Đăng ký
+        </button>
       </div>
 
       {/* Queue items */}
@@ -176,6 +185,14 @@ export default function QueueList({ isAdmin }: QueueListProps) {
           <MusicNoteIcon size={40} className="mx-auto text-gray-300 mb-3" />
           <p className="text-sm text-gray-400">Chưa có ai đăng ký bài hát</p>
           <p className="text-xs text-gray-300 mt-1">Hãy là người đầu tiên!</p>
+          <button
+            onClick={onRegisterClick}
+            className="btn-primary mt-4 flex items-center justify-center gap-2 mx-auto"
+            style={{ width: "auto", padding: "10px 24px" }}
+          >
+            <MicIcon size={16} />
+            Đăng ký bài hát
+          </button>
         </div>
       )}
 

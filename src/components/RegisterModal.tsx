@@ -24,13 +24,13 @@ interface RegisterModalProps {
 }
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 5;
 
 export default function RegisterModal({ isOpen, onClose, onSuccess }: RegisterModalProps) {
   const [guestName, setGuestName] = useState("");
   const [songName, setSongName] = useState("");
   const [note, setNote] = useState("");
-  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeCategory, setActiveCategory] = useState(0);
   const [songPage, setSongPage] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);

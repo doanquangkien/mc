@@ -45,7 +45,7 @@ export default function Home() {
 
       {/* Queue List */}
       <main className="flex-1">
-        <QueueList isAdmin={isAdmin} />
+        <QueueList isAdmin={isAdmin} onRegisterClick={() => setShowRegister(true)} />
       </main>
 
       {/* Floating register button */}
