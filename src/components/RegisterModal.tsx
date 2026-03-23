@@ -58,6 +58,7 @@ export default function RegisterModal({ isOpen, onClose, onSuccess }: RegisterMo
 
   const handleSelectSong = (song: Song) => {
     setSongName(song.artist ? `${song.title} - ${song.artist}` : song.title);
+    setShowSuggestions(false);
   };
 
   const handleSubmit = async () => {
