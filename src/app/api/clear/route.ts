@@ -7,8 +7,8 @@ export async function POST(request: NextRequest) {
     const { pin } = body;
 
     // Verify PIN
-    const adminPin = process.env.ADMIN_PIN || "1234";
-    if (pin !== adminPin) {
+    const clearPin = process.env.CLEAR_PIN || "000000";
+    if (pin !== clearPin) {
       return NextResponse.json(
         { error: "Mã PIN không đúng" },
         { status: 401 }
