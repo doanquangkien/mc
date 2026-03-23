@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Category {
+  id    String @id @default(cuid())
+  name  String
+  songs Song[]
+}
+
+model Song {
+  id         String   @id @default(cuid())
+  title      String
+  artist     String?
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+}
+
+model Queue {
+  id        String   @id @default(cuid())
+  guestName String
+  role      String
+  songName  String
+  note      String?
+  status    String   @default("WAITING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
