@@ -75,21 +75,6 @@ export default function QueueList({ isAdmin, onRegisterClick }: QueueListProps) 
 
   return (
     <div>
-      {/* My position notification */}
-      {myPosition >= 0 && (
-        <div
-          className="glass-card px-4 py-3 mb-4 flex items-center gap-3"
-          style={{ borderLeft: "3px solid var(--primary)" }}
-        >
-          <MapPinIcon size={22} className="text-rose-500 shrink-0" />
-          <div>
-            <p className="text-sm font-semibold" style={{ color: "var(--primary)" }}>
-              Bạn đang ở vị trí số {myPosition + 1}
-            </p>
-            <p className="text-xs text-gray-500">Vui lòng chờ MC gọi tên</p>
-          </div>
-        </div>
-      )}
 
       {/* Queue header */}
       <div className="flex items-center justify-between mb-3">
