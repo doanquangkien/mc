@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import RegisterModal from "@/components/RegisterModal";
 import QueueList from "@/components/QueueList";
 import AdminLogin from "@/components/AdminLogin";
-import { HeartIcon, MicIcon } from "@/components/Icons";
+import { HeartIcon } from "@/components/Icons";
 
 export default function Home() {
   const [showRegister, setShowRegister] = useState(true);
@@ -47,15 +47,6 @@ export default function Home() {
       <main className="flex-1">
         <QueueList isAdmin={isAdmin} onRegisterClick={() => setShowRegister(true)} />
       </main>
-
-      {/* Floating register button */}
-      <button
-        className="fab-register"
-        onClick={() => setShowRegister(true)}
-        aria-label="Đăng ký bài hát"
-      >
-        <MicIcon size={24} />
-      </button>
 
       {/* Register Modal */}
       <RegisterModal
