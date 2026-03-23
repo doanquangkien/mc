@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { LockIcon, UnlockIcon } from "./Icons";
+import ConfirmDialog from "./ConfirmDialog";
 
 interface AdminLoginProps {
   isAdmin: boolean;
@@ -13,6 +14,7 @@ export default function AdminLogin({ isAdmin, onLoginSuccess, onLogout }: AdminL
   const [showModal, setShowModal] = useState(false);
   const [showClearModal, setShowClearModal] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [pin, setPin] = useState("");
   const [clearPin, setClearPin] = useState("");
   const [error, setError] = useState("");
@@ -136,7 +138,7 @@ export default function AdminLogin({ isAdmin, onLoginSuccess, onLogout }: AdminL
             Xóa dữ liệu
           </button>
           <button
-            onClick={handleLogout}
+            onClick={() => setShowLogoutConfirm(true)}
             className="text-xs text-gray-400 underline"
             style={{ touchAction: "manipulation" }}
           >
@@ -282,6 +284,17 @@ export default function AdminLogin({ isAdmin, onLoginSuccess, onLogout }: AdminL
           </div>
         </div>
       )}
+
+      {/* Logout Confirm */}
+      <ConfirmDialog
+        isOpen={showLogoutConfirm}
+        title="Đăng xuất"
+        message="Bạn có chắc muốn đăng xuất khỏi chế độ Admin?"
+        confirmText="Đăng xuất"
+        confirmColor="#6b7280"
+        onConfirm={async () => { setShowLogoutConfirm(false); handleLogout(); }}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
 
       <p className="text-xs text-gray-400 mt-3">
         Website được vận hành bởi <span className="font-medium text-gray-500">Đoàn Quang Kiên</span>
