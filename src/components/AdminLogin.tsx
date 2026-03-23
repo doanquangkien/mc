@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { LockIcon, UnlockIcon } from "./Icons";
 
 interface AdminLoginProps {
@@ -12,6 +12,7 @@ interface AdminLoginProps {
 export default function AdminLogin({ isAdmin, onLoginSuccess, onLogout }: AdminLoginProps) {
   const [showModal, setShowModal] = useState(false);
   const [showClearModal, setShowClearModal] = useState(false);
+  const [showQrModal, setShowQrModal] = useState(false);
   const [pin, setPin] = useState("");
   const [clearPin, setClearPin] = useState("");
   const [error, setError] = useState("");
@@ -84,6 +85,35 @@ export default function AdminLogin({ isAdmin, onLoginSuccess, onLogout }: AdminL
     }
   };
 
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  const generateQr = useCallback(async () => {
+    if (!showQrModal || !qrCanvasRef.current) return;
+    try {
+      const QRCode = (await import("qrcode")).default;
+      const url = typeof window !== "undefined" ? window.location.origin : "";
+      await QRCode.toCanvas(qrCanvasRef.current, url, {
+        width: 280,
+        margin: 2,
+        color: { dark: "#1f1f1f", light: "#ffffff" },
+      });
+    } catch (err) {
+      console.error("QR generation failed:", err);
+    }
+  }, [showQrModal]);
+
+  useEffect(() => {
+    generateQr();
+  }, [generateQr]);
+
+  const downloadQr = () => {
+    if (!qrCanvasRef.current) return;
+    const link = document.createElement("a");
+    link.download = "karaoke-qr-code.png";
+    link.href = qrCanvasRef.current.toDataURL("image/png");
+    link.click();
+  };
+
   return (
     <footer className="py-6 text-center">
       {isAdmin ? (
@@ -91,6 +121,13 @@ export default function AdminLogin({ isAdmin, onLoginSuccess, onLogout }: AdminL
           <span className="text-xs text-green-600 font-medium flex items-center gap-1">
             <UnlockIcon size={14} /> Admin Mode
           </span>
+          <button
+            onClick={() => setShowQrModal(true)}
+            className="text-xs text-blue-500 underline font-medium"
+            style={{ touchAction: "manipulation" }}
+          >
+            Mã QR
+          </button>
           <button
             onClick={() => setShowClearModal(true)}
             className="text-xs text-red-500 underline font-medium"
@@ -204,6 +241,44 @@ export default function AdminLogin({ isAdmin, onLoginSuccess, onLogout }: AdminL
                 </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* QR Code Modal */}
+      {showQrModal && (
+        <div className="modal-overlay" onClick={() => setShowQrModal(false)}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: "360px", borderRadius: "20px", padding: "24px", textAlign: "center" }}
+          >
+            <h3 className="text-lg font-bold text-gray-800 mb-2">Mã QR</h3>
+            <p className="text-xs text-gray-500 mb-4">
+              Quét mã QR để truy cập trang đăng ký bài hát
+            </p>
+            <div className="flex justify-center mb-4">
+              <canvas ref={qrCanvasRef} style={{ borderRadius: "12px" }} />
+            </div>
+            <p className="text-xs text-gray-400 mb-4 break-all">
+              {typeof window !== "undefined" ? window.location.origin : ""}
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowQrModal(false)}
+                className="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 bg-white"
+                style={{ touchAction: "manipulation", fontSize: "14px" }}
+              >
+                Đóng
+              </button>
+              <button
+                onClick={downloadQr}
+                className="flex-1 py-3 rounded-xl text-sm font-semibold text-white"
+                style={{ background: "#3b82f6", touchAction: "manipulation", fontSize: "14px" }}
+              >
+                Tải về
+              </button>
+            </div>
           </div>
         </div>
       )}
