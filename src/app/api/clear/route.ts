@@ -8,6 +8,7 @@ export async function POST(request: NextRequest) {
 
     // Verify PIN
     const clearPin = process.env.CLEAR_PIN || "000000";
+    console.log("Clear PIN check:", { received: pin, expected: clearPin, match: pin === clearPin });
     if (pin !== clearPin) {
       return NextResponse.json(
         { error: "Mã PIN không đúng" },
