@@ -297,7 +297,7 @@ export default function AdminLogin({ isAdmin, onLoginSuccess, onLogout }: AdminL
       />
 
       <p className="text-xs text-gray-400 mt-3">
-        Website được vận hành bởi <span className="font-medium text-gray-500">Đoàn Quang Kiên</span>
+        Liên hệ hỗ trợ <span className="font-medium text-gray-500">0978542284</span>
       </p>
     </footer>
   );
